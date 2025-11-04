@@ -1,0 +1,7 @@
+Note: This is a placeholder. Raycast will use a default icon if monitor.png is not found.
+To add a custom icon:
+1. Create a 512x512 PNG file named "monitor.png" 
+2. Place it in the assets/ directory
+3. Use a monitor/display design
+
+For now, the extension will work with Raycast's default icons.
