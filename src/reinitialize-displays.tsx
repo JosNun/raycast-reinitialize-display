@@ -8,7 +8,6 @@ import {
   Color,
   Keyboard,
 } from "@raycast/api";
-import * as React from "react";
 import { useEffect, useState } from "react";
 import { execSync } from "child_process";
 import { resolve } from "path";
@@ -121,7 +120,7 @@ export default function Command() {
   }
 
   function getMethodActions(display: Display) {
-    const actions: JSX.Element[] = [];
+    const actions = [];
 
     // Add individual method actions based on availability
     const methodOrder: ReinitMethod[] = [

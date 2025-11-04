@@ -2,10 +2,10 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "target": "ES2021",
-    "lib": ["ES2021"],
+    "lib": ["ES2023"],
     "module": "commonjs",
     "moduleResolution": "node",
-    "jsx": "react",
+    "jsx": "react-jsx",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
