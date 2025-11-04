@@ -1,5 +1,0 @@
-This is a placeholder for the extension icon.
-For a real icon, you can:
-1. Create a 512x512 PNG file named "command-icon.png" in the assets/ directory
-2. Use a monitor/display icon design
-3. Or use Raycast's default icon by removing the "icon" field from package.json

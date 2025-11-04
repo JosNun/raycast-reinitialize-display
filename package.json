@@ -2,10 +2,24 @@
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "display-reinitializer",
   "title": "Display Reinitializer",
-  "description": "Force re-detection of connected displays",
+  "description": "Force re-detection and reinitialization of connected displays with multiple methods (DDC, refresh rate, resolution cycle)",
   "icon": "monitor.png",
-  "author": "josiahnunemaker",
+  "author": "JosNun",
   "license": "MIT",
+  "categories": [
+    "System"
+  ],
+  "keywords": [
+    "display",
+    "monitor",
+    "screen",
+    "resolution",
+    "ddc",
+    "refresh",
+    "reinitialize",
+    "external",
+    "detect"
+  ],
   "commands": [
     {
       "name": "reinitialize-displays",
@@ -21,7 +35,7 @@
   "devDependencies": {
     "@raycast/eslint-config": "^1.0.11",
     "@types/node": "20.8.10",
-    "@types/react": "18.3.3",
+    "@types/react": "18.0.9",
     "eslint": "^8.57.0",
     "prettier": "^3.2.5",
     "typescript": "^5.4.5"

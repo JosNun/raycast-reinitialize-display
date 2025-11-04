@@ -1,4 +1,14 @@
-import { List, ActionPanel, Action, showToast, Toast, Icon, Color } from "@raycast/api";
+import {
+  List,
+  ActionPanel,
+  Action,
+  showToast,
+  Toast,
+  Icon,
+  Color,
+  Keyboard,
+} from "@raycast/api";
+import * as React from "react";
 import { useEffect, useState } from "react";
 import { execSync } from "child_process";
 import { resolve } from "path";
@@ -28,13 +38,15 @@ interface MethodInfo {
 const METHOD_INFO: Record<ReinitMethod, MethodInfo> = {
   auto: {
     name: "Auto-Select Best Method",
-    description: "Automatically selects the most effective method for this display",
+    description:
+      "Automatically selects the most effective method for this display",
     icon: Icon.Wand,
     disruptionLevel: "Varies",
   },
   ddc: {
     name: "DDC Power Cycle",
-    description: "Hardware power cycle (external displays only, requires m1ddc)",
+    description:
+      "Hardware power cycle (external displays only, requires m1ddc)",
     icon: Icon.Plug,
     disruptionLevel: "Low",
   },
@@ -47,7 +59,7 @@ const METHOD_INFO: Record<ReinitMethod, MethodInfo> = {
   resolution: {
     name: "Resolution Cycle",
     description: "Temporarily change resolution and restore",
-    icon: Icon.TwoColumns,
+    icon: Icon.Monitor,
     disruptionLevel: "Medium",
   },
   soft: {
@@ -84,7 +96,6 @@ export default function Command() {
 
   async function handleReinitialize(display: Display, method: ReinitMethod) {
     const methodInfo = METHOD_INFO[method];
-    const methodName = method === "auto" ? display.recommendedMethod : method;
 
     const toast = await showToast({
       style: Toast.Style.Animated,
@@ -113,21 +124,31 @@ export default function Command() {
     const actions: JSX.Element[] = [];
 
     // Add individual method actions based on availability
-    const methodOrder: ReinitMethod[] = ["ddc", "refresh", "resolution", "soft"];
+    const methodOrder: ReinitMethod[] = [
+      "ddc",
+      "refresh",
+      "resolution",
+      "soft",
+    ];
 
     for (const method of methodOrder) {
       const isAvailable = display.availableMethods.includes(method);
       const methodInfo = METHOD_INFO[method];
 
       if (isAvailable) {
+        const keyNumber = (
+          actions.length + 1
+        ).toString() as Keyboard.KeyEquivalent;
         actions.push(
           <Action
             key={method}
             title={methodInfo.name}
             icon={methodInfo.icon}
             onAction={() => handleReinitialize(display, method)}
-            shortcut={{ modifiers: [], key: String(actions.length + 1) as any }}
-          />
+            {...(keyNumber <= "9"
+              ? { shortcut: { modifiers: [], key: keyNumber } }
+              : {})}
+          />,
         );
       }
     }
@@ -148,14 +169,21 @@ export default function Command() {
           <List.Item
             key={display.uuid}
             icon={{
-              source: display.isBuiltIn ? Icon.Laptop : Icon.Monitor,
+              source: display.isBuiltIn ? Icon.ComputerChip : Icon.Monitor,
               tintColor: display.isMain ? Color.Blue : Color.SecondaryText,
             }}
             title={display.name}
             subtitle={`${display.width}x${display.height}`}
             accessories={[
-              ...(display.isMain ? [{ tag: { value: "Main", color: Color.Blue } }] : []),
-              { tag: { value: display.isBuiltIn ? "Built-in" : "External", color: Color.SecondaryText } },
+              ...(display.isMain
+                ? [{ tag: { value: "Main", color: Color.Blue } }]
+                : []),
+              {
+                tag: {
+                  value: display.isBuiltIn ? "Built-in" : "External",
+                  color: Color.SecondaryText,
+                },
+              },
               {
                 tag: {
                   value: `Recommended: ${METHOD_INFO[display.recommendedMethod as ReinitMethod]?.name || display.recommendedMethod}`,
@@ -168,11 +196,15 @@ export default function Command() {
               <ActionPanel>
                 <ActionPanel.Section title="Primary Actions">
                   <Action
-                    title="Reinitialize Display (Auto)"
+                    title="Reinitialize Display (auto)"
                     icon={Icon.ArrowClockwise}
                     onAction={() => handleReinitialize(display, "auto")}
                   />
-                  <Action title="Refresh List" icon={Icon.RotateClockwise} onAction={loadDisplays} />
+                  <Action
+                    title="Refresh List"
+                    icon={Icon.RotateClockwise}
+                    onAction={loadDisplays}
+                  />
                 </ActionPanel.Section>
 
                 <ActionPanel.Section title="Choose Reinitialization Method">
@@ -202,9 +234,18 @@ function DisplayDetails({ display }: { display: Display }) {
       <List.Section title="Display Information">
         <List.Item title="Name" subtitle={display.name} />
         <List.Item title="ID" subtitle={String(display.id)} />
-        <List.Item title="Resolution" subtitle={`${display.width}x${display.height}`} />
-        <List.Item title="Type" subtitle={display.isBuiltIn ? "Built-in" : "External"} />
-        <List.Item title="Main Display" subtitle={display.isMain ? "Yes" : "No"} />
+        <List.Item
+          title="Resolution"
+          subtitle={`${display.width}x${display.height}`}
+        />
+        <List.Item
+          title="Type"
+          subtitle={display.isBuiltIn ? "Built-in" : "External"}
+        />
+        <List.Item
+          title="Main Display"
+          subtitle={display.isMain ? "Yes" : "No"}
+        />
         <List.Item
           title="Multiple Refresh Rates"
           subtitle={display.hasMultipleRefreshRates ? "Yes" : "No"}
@@ -269,7 +310,10 @@ async function getDisplays(): Promise<Display[]> {
   }
 }
 
-async function reinitializeDisplay(displayId: number, method: ReinitMethod): Promise<void> {
+async function reinitializeDisplay(
+  displayId: number,
+  method: ReinitMethod,
+): Promise<void> {
   const binaryPath = getBinaryPath();
   const methodMap: Record<ReinitMethod, string> = {
     auto: "redetect-auto",
@@ -289,7 +333,8 @@ async function reinitializeDisplay(displayId: number, method: ReinitMethod): Pro
   } catch (error) {
     if (error instanceof Error) {
       // Extract stderr message if available
-      const errorOutput = (error as any).stderr?.toString() || error.message;
+      const execError = error as Error & { stderr?: Buffer };
+      const errorOutput = execError.stderr?.toString() || error.message;
       throw new Error(errorOutput);
     }
     throw error;
