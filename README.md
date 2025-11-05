@@ -214,3 +214,7 @@ Built using:
 - macOS CoreGraphics framework
 - IOKit framework
 - [m1ddc](https://github.com/waydabber/m1ddc) (optional dependency)
+
+## Development Note
+
+While I (the human) did the driving and direction, this code was generated with AI assistance to solve a display reinitialization problem I couldn't allocate time to fix manually. The AI helped implement the Swift display management logic, multiple reinitialization methods, and the Raycast UI integration.
