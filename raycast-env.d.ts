@@ -15,11 +15,18 @@ declare type Preferences = ExtensionPreferences
 declare namespace Preferences {
   /** Preferences accessible in the `reinitialize-displays` command */
   export type ReinitializeDisplays = ExtensionPreferences & {}
+  /** Preferences accessible in the `quick-reinitialize` command */
+  export type QuickReinitialize = ExtensionPreferences & {}
 }
 
 declare namespace Arguments {
   /** Arguments passed to the `reinitialize-displays` command */
   export type ReinitializeDisplays = {}
+  /** Arguments passed to the `quick-reinitialize` command */
+  export type QuickReinitialize = {
+  /** Display name (e.g., LG 27UK850) */
+  "displayName": string
+}
 }
 
 declare module "swift:*/display-helper" {
